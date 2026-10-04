@@ -16,8 +16,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
-        'passwords' => 'users',
+        'guard' => env('AUTH_GUARD', 'web'),
+        'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
     /*
@@ -66,6 +66,11 @@ return [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', User::class),
         ],
+
+        // 'users' => [
+        //     'driver' => 'database',
+        //     'table' => 'users',
+        // ],
     ],
 
     /*
@@ -90,18 +95,9 @@ return [
     'passwords' => [
         'users' => [
             'provider' => 'users',
-            'table' => 'password_resets',
+            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,
-        ],
-        'settings' => [
-            'expire' => 30,
-            'min_length' => 6,
-            'contains_uppercase' => true,
-            'contains_lowercase' => true,
-            'contains_number' => true,
-            'contains_special' => true,
-            'disable_compromised' => false,
         ],
     ],
 
@@ -110,54 +106,12 @@ return [
     | Password Confirmation Timeout
     |--------------------------------------------------------------------------
     |
-    | Here you may define the amount of seconds before a password confirmation
+    | Here you may define the number of seconds before a password confirmation
     | window expires and users are asked to re-enter their password via the
     | confirmation screen. By default, the timeout lasts for three hours.
     |
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Auto Logout Timer
-    |--------------------------------------------------------------------------
-    |
-    | This option will define the amount of minutes that a user can site idle
-    | before they are automatically logged out of the application
-    |
-    */
-
-    'auto_logout_timer' => 15,
-
-    /*
-    |--------------------------------------------------------------------------
-    | Login History Lifespan
-    |--------------------------------------------------------------------------
-    |
-    | This option defines how long (in days) that user login history is kept
-    |
-    */
-
-    'login_history_lifespan' => 730,
-
-    /*
-    |--------------------------------------------------------------------------
-    | 2FA Authentication
-    |--------------------------------------------------------------------------
-    |
-    | This option defines the settings for Two Factor Authentication.  Required
-    | determines if this feature is enabled.  Allow save device allows the user
-    | to list a devices as safe so that they will not be given the 2FA challenge
-    | on their next visit with the same device.
-    |
-    */
-
-    'twoFa' => [
-        'required' => (bool) env('REQUIRE_2FA', false),
-        'allow_save_device' => (bool) true,
-        'allow_via_email' => (bool) true,
-        'allow_via_authenticator' => (bool) true,
-    ],
 
 ];

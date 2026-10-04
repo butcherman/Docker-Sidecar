@@ -11,17 +11,9 @@ return [
     | by the framework. The "local" disk, as well as a variety of cloud
     | based disks are available to your application for file storage.
     |
-    | Max File upload size and Chunk Size of chunked file uploads are also
-    | defined here in bytes.  Default settings are 2GB for Max File upload
-    | and 5MB for chunk upload size.
-    |
     */
 
     'default' => env('FILESYSTEM_DISK', 'local'),
-
-    'max_filesize' => env('MAX_UPLOAD', 2000000000),
-
-    'chunk_size' => 5000000,
 
     /*
     |--------------------------------------------------------------------------
@@ -40,38 +32,32 @@ return [
 
         'local' => [
             'driver' => 'local',
-            'root' => storage_path('app'),
+            'root' => storage_path('app/private'),
             'serve' => true,
             'throw' => false,
-            'permissions' => [
-                'file' => [
-                    'public' => 0644,
-                    'private' => 0644,
-                ],
-                'dir' => [
-                    'public' => 0755,
-                    'private' => 0755,
-                ],
-            ],
+            'report' => false,
         ],
 
-        /**
-         * Used for public accessible items such as images
-         */
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
             'visibility' => 'public',
             'throw' => false,
+            'report' => false,
         ],
 
-        /**
-         * Application logs
-         */
-        'logs' => [
-            'driver' => 'local',
-            'root' => storage_path('logs'),
+        's3' => [
+            'driver' => 's3',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'url' => env('AWS_URL'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'throw' => false,
+            'report' => false,
         ],
 
     ],

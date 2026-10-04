@@ -1,67 +1,24 @@
-import fs from "fs";
-import inertia from '@inertiajs/vite';
-import laravel from "laravel-vite-plugin";
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import { bunny } from 'laravel-vite-plugin/fonts';
 import tailwindcss from '@tailwindcss/vite';
-import vue from "@vitejs/plugin-vue";
-import { defineConfig, loadEnv } from "vite";
-import { wayfinder } from '@laravel/vite-plugin-wayfinder';
 
-export default defineConfig(({ mode }) => {
-    process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
-    const wsHost =
-        process.env.VITE_WS_HOST !== undefined
-            ? process.env.VITE_WS_HOST
-            : "localhost";
-
-    return {
-        plugins: [
-            laravel({
-                input: "resources/js/app.ts",
-                refresh: ["routes/**"],
-            }),
-            vue({
-                template: {
-                    transformAssetUrls: {
-                        base: null,
-                        includeAbsolute: false,
-                    },
-                },
-            }),
-            tailwindcss(),
-            inertia(),
-            ...(mode !== "test" ? [wayfinder({
-                path: 'resources/js/wayfinder'
-            })] : [])
-        ],
-        server: {
-            https: {
-                key: fs.readFileSync("/var/www/html/keystore/private/server.key"),
-                cert: fs.readFileSync("/var/www/html/keystore/server.crt"),
-            },
-            host: "0.0.0.0",
-            hmr: {
-                protocol: "wss",
-                host: wsHost,
-                https: {
-                    key: fs.readFileSync("/var/www/html/keystore/private/server.key"),
-                    cert: fs.readFileSync("/var/www/html/keystore/server.crt"),
-                },
-            },
-            cors: true,
-            // cors: {
-            //     origin: [
-            //         `https://${wsHost}`,
-            //     ],
-            // }
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js'],
+            refresh: true,
+            fonts: [
+                bunny('Instrument Sans', {
+                    weights: [400, 500, 600],
+                }),
+            ],
+        }),
+        tailwindcss(),
+    ],
+    server: {
+        watch: {
+            ignored: ['**/storage/framework/views/**'],
         },
-        test: {
-            globals: true,
-            environment: 'happy-dom',
-            coverage: {
-                enabled: true,
-                provider: 'v8',
-                reportsDirectory: './tests/vitest/_Report'
-            }
-        }
-    };
+    },
 });
