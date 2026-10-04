@@ -1,0 +1,88 @@
+{
+    "name": "butcherman/tech_bench",
+    "type": "project",
+    "description": "Project Skeleton Template",
+    "keywords": [],
+    "license": "LGPL-2.0-or-later",
+    "require": {
+        "php": "^8.5",
+        "butcherman/version": "^1.4",
+        "glhd/gretel": "^1.10",
+        "inertiajs/inertia-laravel": "^3.0",
+        "laravel/fortify": "^1.37",
+        "laravel/framework": "^13.18",
+        "laravel/horizon": "^5.47",
+        "laravel/pennant": "^1.24",
+        "laravel/prompts": "^0.3",
+        "laravel/reverb": "^1.10",
+        "laravel/scout": "^11.3",
+        "laravel/telescope": "^5.20",
+        "laravel/tinker": "^3.0",
+        "laravel/wayfinder": "^0.1.20",
+        "pion/laravel-chunk-upload": "^1.6",
+        "predis/predis": "^3.5"
+    },
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^4.4",
+        "barryvdh/laravel-ide-helper": "^3.7",
+        "butcherman/artisan-dev-commands": "^0",
+        "fakerphp/faker": "^1.24",
+        "laravel/pail": "^1.2",
+        "laravel/pint": "^1.29",
+        "mockery/mockery": "^1.6",
+        "mxl/laravel-job": "^1.8",
+        "nunomaduro/collision": "^8.9",
+        "phpunit/phpunit": "^13.2",
+        "spatie/laravel-horizon-watcher": "^1.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan ide-helper:generate"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
+        ],
+        "dev": [
+            "Composer\\Config::disableProcessTimeout",
+            "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
