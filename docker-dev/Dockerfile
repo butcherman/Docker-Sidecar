@@ -1,35 +1,14 @@
 FROM php:8.5-cli
 
-# Create the appuser and appgroup
-RUN addgroup --gid 1024 appgroup
-RUN adduser --disabled-password --gecos "" --force-badname --ingroup appgroup appuser
-RUN usermod -a -G www-data appuser
-
-# Add the docker-php-extension-installer script
-ADD --chmod=0755 \
-    https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions \
-    /usr/local/bin/
+WORKDIR /var/www/html
 
 # Install dependency packages
 RUN apt update && apt install -yq \
     curl \
-    nano \
-    yq \
-    zip
+    nano
 
-# Install PHP Extensions
-RUN install-php-extensions \
-    bcmath \
-    exif \
-    fileinfo \
-    gd \
-    gmp \
-    intl \
-    pcntl \
-    zip
-
-# Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Overwrite the Production php.ini file with the dev one
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
@@ -37,13 +16,28 @@ RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 # Install xDebug to allow PHPUnit Testing
 RUN install-php-extensions xdebug
 
-# Build Healthcheck
-# HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-#     CMD php artisan health:check
+# Copy the .ini file for additional debug configuration
+COPY ./php-dev.ini $PHP_INI_DIR/conf.d/php-dev.ini
 
-# Change the owner of the /var/html folder to allow tbuser to write to it
-RUN chown appuser:www-data -R /var/www
+# Application Files
+# COPY ./src /var/www/html
 
-# Finalize Image
-USER appuser
-WORKDIR /var/www/html
+# RUN composer install \
+#     --no-dev \
+#     --no-interaction \
+#     --prefer-dist \
+#     --optimize-autoloader
+
+# Laravel writable directories
+# RUN chown -R www-data:www-data \
+#     storage \
+#     bootstrap/cache
+
+# COPY ./docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+# RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# ENTRYPOINT [ "entrypoint.sh" ]
+
+EXPOSE 8080
+
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
