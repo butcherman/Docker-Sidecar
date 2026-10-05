@@ -22,6 +22,8 @@ RUN chown -R www-data:www-data \
 COPY ./docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
+# TODO - Build .env file and set application key
+
 ENTRYPOINT [ "entrypoint.sh" ]
 
 EXPOSE 8080
