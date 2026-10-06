@@ -13,6 +13,8 @@ class ContainerManager
 
     public function restart(ManagedContainer $container): void
     {
+        Log::debug('Restarting container '.$container->value);
+
         $definition = config(
             "docker-manager.containers.{$container->value}"
         );

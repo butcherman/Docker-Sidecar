@@ -14,9 +14,8 @@ class DockerClient implements DockerClientInterface
         private readonly string $apiVersion,
     ) {}
 
-    public function inspect(
-        ManagedContainer $container,
-    ): array {
+    public function inspect(ManagedContainer $container): array
+    {
         return $this->request(
             'GET',
             "/containers/{$this->containerName($container)}/json",
@@ -31,10 +30,8 @@ class DockerClient implements DockerClientInterface
         );
     }
 
-    public function restart(
-        ManagedContainer $container,
-        int $timeout = 10,
-    ): void {
+    public function restart(ManagedContainer $container, int $timeout = 10): void
+    {
         $this->request(
             'POST',
             sprintf(
@@ -45,9 +42,8 @@ class DockerClient implements DockerClientInterface
         );
     }
 
-    private function containerName(
-        ManagedContainer $container,
-    ): string {
+    private function containerName(ManagedContainer $container): string
+    {
         $name = config(
             "docker-manager.containers.{$container->value}.name"
         );
@@ -61,10 +57,8 @@ class DockerClient implements DockerClientInterface
         return $name;
     }
 
-    private function request(
-        string $method,
-        string $path,
-    ): array {
+    private function request(string $method, string $path): array
+    {
         Log::debug('Client request being made', [
             'method' => $method,
             'path' => $path,
@@ -96,8 +90,6 @@ class DockerClient implements DockerClientInterface
         if ($body === false) {
             $error = curl_error($curl);
 
-            curl_close($curl);
-
             throw new RuntimeException(
                 "Docker API request failed: {$error}"
             );
@@ -107,8 +99,6 @@ class DockerClient implements DockerClientInterface
             $curl,
             CURLINFO_HTTP_CODE
         );
-
-        curl_close($curl);
 
         if ($status < 200 || $status >= 300) {
             throw new RuntimeException(
