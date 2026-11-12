@@ -14,8 +14,10 @@ class AuthenticateApiKey
         $expected = config('docker-manager.api_key');
 
         if (
-            ! $provided ||
-            ! $expected ||
+            ! is_string($provided) ||
+            ! is_string($expected) ||
+            $provided === '' ||
+            $expected === '' ||
             ! hash_equals($expected, $provided)
         ) {
             return response()->json([

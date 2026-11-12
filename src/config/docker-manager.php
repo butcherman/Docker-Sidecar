@@ -25,6 +25,18 @@ return [
     'api_key' => env('DOCKER_MANAGER_API_KEY'),
 
     /*
+    |--------------------------------------------------------------------------
+    | Tech Bench Installation
+    |--------------------------------------------------------------------------
+    */
+
+    'installation' => [
+        'directory' => env('TECH_BENCH_INSTALL_DIR', '/opt/tech-bench'),
+        'project_name' => env('TECH_BENCH_COMPOSE_PROJECT_NAME', 'tech-bench'),
+        'compose_directory' => env('TECH_BENCH_COMPOSE_DIRECTORY', '/opt/tech-bench'),
+    ],
+
+    /*
     |---------------------------------------------------------------------------
     | Managed Containers
     |---------------------------------------------------------------------------

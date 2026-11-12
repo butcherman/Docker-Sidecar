@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     nano \
+    unzip \
     && install -m 0755 -d /etc/apt/keyrings \
     && curl -fsSL https://download.docker.com/linux/debian/gpg \
     -o /etc/apt/keyrings/docker.asc \
@@ -25,13 +26,15 @@ ADD --chmod=0755 \
     https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions \
     /usr/local/bin/
 
+RUN install-php-extensions zip
+
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # PHP configuration
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
-COPY ./php-dev.ini $PHP_INI_DIR/conf.d/php-dev.ini
+# COPY ./php-dev.ini $PHP_INI_DIR/conf.d/php-dev.ini
 
 EXPOSE 8080
 
