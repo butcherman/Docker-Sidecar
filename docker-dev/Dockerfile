@@ -34,8 +34,6 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # PHP configuration
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 
-# COPY ./php-dev.ini $PHP_INI_DIR/conf.d/php-dev.ini
-
 EXPOSE 8080
 
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
