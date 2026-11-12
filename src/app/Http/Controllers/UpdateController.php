@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Jobs\PerformTechBenchUpdate;
 use App\Services\GitHubReleaseService;
 use App\Services\InstallationManager;
+use App\Services\UpdateJournal;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Bus;
@@ -18,12 +19,28 @@ class UpdateController extends Controller
         Request $request,
         GitHubReleaseService $releases,
         InstallationManager $installation,
+        UpdateJournal $journal,
     ): JsonResponse {
         $validated = $request->validate([
             'version' => ['required', 'string', 'max:32'],
         ]);
 
         $version = $validated['version'];
+
+        // Do not accept updates while an interrupted update needs recovery.
+        try {
+            if ($journal->read() !== null) {
+                return response()->json([
+                    'message' => 'An interrupted update requires recovery before another update can start.',
+                ], 409);
+            }
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'message' => 'Unable to verify the update recovery state.',
+            ], 503);
+        }
 
         $release = $releases->validate($version);
 
@@ -43,6 +60,24 @@ class UpdateController extends Controller
             return response()->json([
                 'message' => 'Another update is already in progress.',
             ], 409);
+        }
+
+        try {
+            if ($journal->read() !== null) {
+                $lock->release();
+
+                return response()->json([
+                    'message' => 'An interrupted update requires recovery before another update can start.',
+                ], 409);
+            }
+        } catch (Throwable $exception) {
+            $lock->release();
+
+            report($exception);
+
+            return response()->json([
+                'message' => 'Unable to verify the update recovery state.',
+            ], 503);
         }
 
         $updateId = (string) Str::uuid();

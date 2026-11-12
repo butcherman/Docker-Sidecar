@@ -25,6 +25,21 @@ return [
     'api_key' => env('DOCKER_MANAGER_API_KEY'),
 
     /*
+    |---------------------------------------------------------------------------
+    | Journal for Update Recovery
+    |---------------------------------------------------------------------------
+    |
+    | This location will log updates to allow for recovery in the event of an
+    | unexpected failure.
+    |
+    */
+
+    'journal_path' => env(
+        'DOCKER_MANAGER_JOURNAL_PATH',
+        '/var/lib/docker-sidecar/update-journal'
+    ),
+
+    /*
     |--------------------------------------------------------------------------
     | Tech Bench Installation
     |--------------------------------------------------------------------------
